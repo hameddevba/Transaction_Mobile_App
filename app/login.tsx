@@ -12,10 +12,8 @@ const LoginScreen = () => {
   const [password, setPassword] = useState('');
 
 
-  const handleLogin = () => {
-    // TODO: Implement login logic
-      console.log('Login with:', name, password);
-         router.replace('/');
+  const handleLogin = () => { 
+      router.replace('/');
   };
 
   return (
