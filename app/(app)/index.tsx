@@ -24,6 +24,7 @@ const ResearchScreen = () => {
 //   const [defaultSelected, setDefaultSelected] = useState(null)
   const [dataItem, setDataItem] = useState([])
   const [isFocus, setIsFocus] = useState(false);
+  
   const handleSearch = () => {
     // TODO: Implement login logic
     console.log('Login with:', number, selectedItem);
@@ -50,7 +51,7 @@ const ResearchScreen = () => {
     };
 
    useEffect(()=>{
-      getMoviesFromApiAsync();
+      // getMoviesFromApiAsync();
    },[])
 
   return (
@@ -89,10 +90,10 @@ const ResearchScreen = () => {
       >
         <Text style={styles.buttonText}>Recherche Transaction</Text>
       </TouchableOpacity>
-      <Button 
-      title='users'
-      onPress={()=> router.navigate(`/user`)}
-      />
+         {/* <Button 
+         title='users'
+         onPress={()=> router.navigate(`/acardView`)}
+         /> */}
     </View>
   );
 };

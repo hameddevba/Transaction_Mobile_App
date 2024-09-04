@@ -1,0 +1,413 @@
+import React, { useState, useEffect } from 'react';
+import { Layout, Text, Input, Button, RadioGroup, Radio, Select, SelectItem } from '@ui-kitten/components';
+import { StyleSheet, ScrollView, KeyboardAvoidingView, Alert } from 'react-native';
+import { Dropdown } from 'react-native-element-dropdown';
+import { router } from 'expo-router'
+
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+   const data = [
+      { label: 'MRO', id: 1 },
+      { label: 'CFA', id: 2 },
+      { label: 'EUR', id: 3 },
+      { label: 'USD', id: 4 },
+     
+    ];
+   
+
+    type Agency = {
+      agCode: string;
+      agLib: string;
+    };
+
+
+    const defaultValue = {
+
+      envoyeur: {
+          entel: "0022246049282",
+          enpre: "Ba",
+          endate: 1639884148000,
+          ennom: "Mohamed",
+          encode:1341717,
+          enuscode: 1260,
+          enpi: "7139163432",
+          entypp: "CARNT DIDENTEN",
+          enadd: "MAURITANIE",
+          enagcode: 24
+      },
+
+      benef: {
+          bnpre: "",
+          bnagcode: 44,
+          bntypp: "",
+          bnpi: "",
+          bnnom: "M",
+          bntel: "23232323",
+          bnadd: "treavh",
+          bndate: 1539885038000,
+          bnuscode: 1260
+      },
+
+      trdeven: "CFA",
+      trdatcr: "25-10-2027 10:00:49",
+      trtyp: 0,
+      trdemanen: null,
+      tragen: 24,
+      tragbn: 50,
+      truscode: 1260,
+      trcacodet: null,
+      trvauscode: null,
+      trmone: 0,
+      trcacodepey: 22,
+      trmonttc: 0,
+      trcodetrans: null,
+      travis: "",
+      trmont: 0,
+      trdev: "MRO",
+      trtacode: null,
+      trnetpay: 0,
+      trdevpay: "MRO",
+      trcodepay: null,
+      trvalidan: "1",
+      trdemanben: null,
+      trdate: 1700920674000,
+      trrejet: ""
+  }
+  
+
+   type DataSetsType={
+      lastName: string,
+      firstName: string,
+      phoneNumber: string,
+      address: string,
+      amount:string,
+      amountPayed:string,
+      selectedMountCurrency:string,
+      selectedPayedMountCurrency:string,
+      selectedAgence:string|null,
+   }
+
+function Component() {
+
+
+   const [dataSubmited, setDataSubmited] = useState(defaultValue)
+
+   const [dataSets, setDataSets] = useState<DataSetsType>({
+      lastName: '',
+      firstName: '',
+      phoneNumber: '',
+      address: '',
+      amount:'0',
+      amountPayed:'0',
+      selectedMountCurrency:'CFA',
+      selectedPayedMountCurrency:"MRO",
+      selectedAgence:null,
+
+   });
+
+   //store the fetched data from the database 
+    const [dataAgency, setDataAgency] =useState<Agency[]>([]);
+
+
+   function formatDateTime() {
+      const now = new Date();
+      
+      // Extract date components
+      const day = String(now.getDate()).padStart(2, '0');
+      const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+      const year = now.getFullYear();
+      
+      // Extract time components
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      
+      // Format the date and time
+      const formattedDateTime = `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
+      
+      return formattedDateTime;
+   }
+
+
+    const handleDataFetching = () => {
+
+      const newDataSubmited = {
+         ...dataSubmited,
+         benef: {
+            ...dataSubmited.benef,
+            bnpre: dataSets.lastName ,
+            bnnom: dataSets.firstName,
+            bntel: dataSets.phoneNumber,
+            bnadd: dataSets.address,
+            bnagcode: parseInt(dataSets.selectedAgence ?? '0'),
+         },
+         trdatcr : formatDateTime(),
+         tragen: parseInt(dataSets.selectedAgence ?? '0'),
+         tragbn: parseInt(dataSets.selectedAgence ?? '0'),
+         trmone: parseFloat(dataSets.amount),
+         trnetpay: parseFloat(dataSets.amountPayed),
+         trdevpay: dataSets.selectedPayedMountCurrency,
+         trdev: dataSets.selectedPayedMountCurrency,
+         trdeven: dataSets.selectedMountCurrency,
+      };
+   
+      setDataSubmited(newDataSubmited);
+   
+      
+      const formData = new FormData();
+      formData.append('data', JSON.stringify(newDataSubmited));
+   
+      const url = "http://192.168.100.100:9999/api/trans/changetrans";
+      const options = {
+         method: 'POST',
+         body: formData,
+      };
+   
+      fetch(url, options)
+         .then(response => response.text())
+         .then(data =>{
+            const jsonData = JSON.stringify(data)
+            console.log( "the data Json sended : ")
+            console.log(jsonData)
+         })
+         .catch(error => console.error('Error:', error));
+   
+      setDataSets({
+         lastName: '',
+         firstName: '',
+         phoneNumber: '',
+         address: '',
+         amount: '0',
+         amountPayed: '0',
+         selectedMountCurrency: 'CFA',
+         selectedPayedMountCurrency: "MRO",
+         selectedAgence: null,
+      });
+   };
+
+
+
+    const getAllAgency = async () => {
+      try {
+         const response = await fetch('http://192.168.100.100:9999/api/agences');
+         const json = await response.json();
+         setDataAgency(json);
+      } catch (error) {
+         console.error(error);
+      }
+   };
+
+
+   const handleInputChange = (name:any, value:any) => {
+      setDataSets({
+        ...dataSets,
+        [name]: value,
+      });
+   };
+
+   const handleSubmit = ()=>{
+      if(
+         dataSets.phoneNumber != '' &&
+         dataSets.amount !='0' &&
+         dataSets.amountPayed != '0'
+      ){
+      // handleDataFetching();
+      // router.navigate(`/trans?num=${dataSubmited.envoyeur.entel}&bntel=${dataSets.phoneNumber}`);
+      }else{
+         Alert.alert("Veillez inserez des donnees valide")
+      }
+      
+   }
+
+
+  useEffect(() => {
+   getAllAgency();
+  }, []);
+
+  return (
+  
+      <KeyboardAwareScrollView>
+         <Layout style={styles.card} level="2">
+         <Text category="h2" style={styles.title}>
+          Tranasaction
+         </Text>
+         {/* <Text appearance="hint" style={styles.description}>
+            Transfer funds to your beneficiary securely.
+         </Text> */}
+         <Layout style={styles.content}>
+            <Layout style={styles.inputContainer}>
+               <Text category="label" style={styles.inputLabel}>Nom</Text>
+               <Input placeholder="Entrer le nom du benefiecier" value={dataSets.lastName} onChangeText={(value) => handleInputChange('lastName', value)} />
+            </Layout>
+            <Layout style={styles.inputContainer}>
+               <Text category="label" style={styles.inputLabel}>Prenom</Text>
+               <Input placeholder="Entre le prenom du beneficier" value={dataSets.firstName} onChangeText={(value) => handleInputChange('firstName', value)}/>
+            </Layout>
+            <Layout style={styles.inputContainer}>
+               <Text category="label" style={styles.inputLabel}>Addresse</Text>
+               <Input placeholder="Entre l'addresse du beneficier" value={dataSets.address} onChangeText={(value) => handleInputChange('address', value)} />
+            </Layout>
+            <Layout style={styles.inputContainer}>
+               <Text category="label" style={styles.inputLabel}>Numero telephoner</Text>
+               <Input placeholder="numero telephone benficier" keyboardType="phone-pad" value={dataSets.phoneNumber} onChangeText={(value) => handleInputChange('phoneNumber', value)} />
+            </Layout>
+            <Layout style={styles.inputContainer}>
+               <Text category="label" style={styles.inputLabel}>Mountant d'envoie </Text>
+               <Layout style={{flexDirection:'row'}}>
+                  <Input placeholder="0.00" keyboardType="numeric" style={{width:'75%'}} value={dataSets.amount}  onChangeText={(value) => handleInputChange('amount', value)} />
+                  <Dropdown
+                     style={styles.dropdown2}
+                     placeholderStyle={styles.placeholderStyle}
+                     selectedTextStyle={styles.selectedTextStyle}
+                     inputSearchStyle={styles.inputSearchStyle}
+                     iconStyle={styles.iconStyle}
+                     data={data}
+                     maxHeight={300}
+                     labelField="label"
+                     valueField="id"
+                     placeholder={dataSets.selectedMountCurrency}
+                     value={dataSets.selectedMountCurrency}
+                     onChange={(item) => {
+                        handleInputChange('selectedMountCurrency',item.label);
+                     }}
+                  />
+               </Layout>
+            </Layout>
+            <Layout style={styles.inputContainer}>
+               <Text category="label" style={styles.inputLabel}>Mountant payee</Text>
+               <Layout style={{flexDirection:'row'}}>
+                  <Input placeholder="0.00" keyboardType="numeric" style={{width:'75%'}} value={dataSets.amountPayed} onChangeText={(value) => handleInputChange('amountPayed', value)} />
+                  <Dropdown
+                     style={styles.dropdown2}
+                     placeholderStyle={styles.placeholderStyle}
+                     selectedTextStyle={styles.selectedTextStyle}
+                     iconStyle={styles.iconStyle}
+                     data={data}
+                     maxHeight={300}
+                     labelField="label"
+                     valueField="id"
+                     placeholder={dataSets.selectedPayedMountCurrency}
+                     value={dataSets.selectedPayedMountCurrency}
+                     onChange={(item) => {
+                        handleInputChange('selectedPayedMountCurrency',item.label);
+                     }}
+                  />
+               </Layout>
+            </Layout>
+            <Layout style={styles.inputContainer}>
+               <Text category="label" style={styles.inputLabel}>Agence</Text>
+               <Dropdown
+                  style={styles.dropdown}
+                  placeholderStyle={styles.placeholderStyle}
+                  selectedTextStyle={styles.selectedTextStyle}
+                  iconStyle={styles.iconStyle}
+                  data={dataAgency}
+                  search
+                  maxHeight={500}
+                  labelField="agLib"
+                  valueField="agCode"
+                  searchPlaceholder="Search..."
+                  value={dataSets.selectedAgence}
+                  onChange={(item) => {
+                     handleInputChange('selectedAgence',item.agCode);;
+                  }}
+               />
+            </Layout>
+         </Layout>
+            <Button 
+               style={styles.button}
+               onPress={handleSubmit}>
+               Send
+            </Button>
+         </Layout>
+      </KeyboardAwareScrollView>
+
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+   flex: 1,
+   width: '100%',
+   // overflow:'scroll'
+
+   
+  },
+  card: {
+   flex:1,
+   //  borderRadius: 8,
+    padding: 16,
+   //  maxWidth: 400,
+    width: '100%',
+    overflow:'visible'
+    
+  },
+  title: {
+    margin: 4,
+    textAlign:'left',
+    textTransform:'uppercase',
+    paddingTop:8,
+    paddingBottom:8,
+   //  backgroundColor:'blak
+  },
+  description: {
+    marginBottom: 16,
+  },
+  content: {
+    marginBottom: 24,
+    padding: 22,
+  },
+  inputContainer: {
+    marginBottom: 16,
+  },
+  inputLabel:{
+   fontSize:16,
+   marginBottom:5
+  },
+  radioGroup: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  button: {
+    marginTop: 24,
+  },
+  dropdown: {
+    height: 40,
+    borderWidth: 1,
+    borderColor: '#E4E9F2',
+    backgroundColor:'#F7F9FC',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
+    width: '100%',
+  },
+  dropdown2: {
+   height: 40,
+   borderWidth: 1,
+   borderColor: '#E4E9F2',
+   backgroundColor:'#F7F9FC',
+   borderRadius: 5,
+   padding: 15,
+   marginLeft:2,
+   marginBottom: 10,
+   width: '25%',
+ },
+  icon: {
+    marginRight: 5,
+  },
+  placeholderStyle: {
+    fontSize: 15,
+  },
+  selectedTextStyle: {
+    fontSize: 15,
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 15,
+  },
+});
+
+export default Component;

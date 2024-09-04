@@ -40,7 +40,7 @@ const TransactionItem = ({ item }:{item:any}) => (
           <Ionicons name="person" size={20} color="#4a90e2" />
           <View>
             <Text style={styles.userName}>Envoyeur</Text>
-            <Text style={styles.userName}>{item.sender} (Code: {item.envoyeur.encode})</Text>
+            <Text style={styles.userName}>{item.envoyeur.enpre} (Code: {item.envoyeur.encode})</Text>
             <Text style={styles.userPhone}>{item.envoyeur.entel}</Text>
           </View>
         </View>
@@ -49,14 +49,14 @@ const TransactionItem = ({ item }:{item:any}) => (
           <Ionicons name="person" size={20} color="#50c878" />
           <View>
             <Text style={styles.userName}>Beneficier</Text>
-            <Text style={styles.userName}>{item.receiver} (Code: {item.benef.bncode})</Text>
+            <Text style={styles.userName}>{item.benef.bnpre} {item.benef.bnnom} (Code: {item.benef.bncode})</Text>
             <Text style={styles.userPhone}>{item.benef.bntel}</Text>
           </View>
         </View>
       </View>
       <View style={styles.amountRow}>
-        <Text style={styles.amountText}>Envoyeur Montant: {item.trmont.toFixed(2)} CFA</Text>
-        <Text style={styles.amountText}>Receveur Montant: {item.trnetpay.toFixed(2)} MRO</Text>
+        <Text style={styles.amountText}>Envoyeur Montant: {item.trnetpay.toFixed(2)} {item.trdevpay}</Text>
+        <Text style={styles.amountText}>Receveur Montant: {item.trmone.toFixed(2)} {item.trdeven}</Text>
       </View>
       <View style={styles.detailsRow}>
         <View style={styles.agencyInfo}>
@@ -74,7 +74,7 @@ const TransactionItem = ({ item }:{item:any}) => (
 
 export default function Component({ navigation }:{navigation:any}) {
 
-   const { num, agen } = useLocalSearchParams<{ num?: string, agen?:string }>();
+   const { num,bntel } = useLocalSearchParams<{ num?: string, bntel?:string }>();
 
    const [transData, setTransData] =useState([])
 
@@ -82,7 +82,7 @@ export default function Component({ navigation }:{navigation:any}) {
       try {
          const response = await fetch(
          //  `http://192.168.99.143:9999/api/trans/filtre/${num}/${parseInt(agen ??'0')}`,
-          `http://192.168.100.100:9999/api/trans/filtre/${num}/${parseInt(agen ??'0')}`,
+          `http://192.168.100.100:9999/api/trans/benef/${num}`,
          );
 
          if (response.status != 200) {
@@ -102,7 +102,7 @@ export default function Component({ navigation }:{navigation:any}) {
 
    useEffect(()=>{
       getAllTrans();
-   },[num,agen])
+   },[num,bntel])
 
 
   return (

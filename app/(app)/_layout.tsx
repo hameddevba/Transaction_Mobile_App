@@ -3,8 +3,7 @@ import { Redirect, Slot, Stack } from 'expo-router';
 import { useSession } from '../authConfig/autContext';
 import { Drawer } from 'expo-router/drawer';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import * as SecureStore from 'expo-secure-store';
-import { SafeAreaView } from 'react-native-safe-area-context';
+
 
 export default function AppLayout() {
    
@@ -23,12 +22,12 @@ export default function AppLayout() {
 
   // This layout can be deferred because it's not the root layout.
   return (
-   <SafeAreaView style={{ flex: 1 }}>
-      <Slot />
-   </SafeAreaView>
-   // <GestureHandlerRootView style={{ flex: 1 }}>
-   //    <Drawer />
-   //  </GestureHandlerRootView>
+   // <SafeAreaView style={{ flex: 1 }}>
+   //    <Slot />
+   // </SafeAreaView>
+   <GestureHandlerRootView style={{ flex: 1 }}>
+      <Drawer />
+    </GestureHandlerRootView>
 
   );
 }
