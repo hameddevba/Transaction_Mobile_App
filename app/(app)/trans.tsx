@@ -2,29 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, ScrollView, TouchableOpacity } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useLocalSearchParams } from 'expo-router';
+import { convertDate } from '../utils/timeConvert';
 
-// Example
-// const transactions = [
-//   { id: '1', transactionCode: 'TXN001', sender: "John Doe", senderCode: "SND123", senderPhone: "+1234567890", receiver: "Jane Smith", receiverCode: "RCV456", receiverPhone: "+0987654321", senderAmount: 500.00, receiverAmount: 250.00, agency: "AGENCE CENTRALE ABDALLAHI", date: "2023-06-15" },
-//   { id: '2', transactionCode: 'TXN002', sender: "Alice Johnson", senderCode: "SND789", senderPhone: "+1234509876", receiver: "Bob Williams", receiverCode: "RCV321", receiverPhone: "+0987612345", senderAmount: 1000.00, receiverAmount: 500.00, agency: "AGENCE SEBKHA MOSSA", date: "2023-06-14" },
-//   { id: '3', transactionCode: 'TXN003', sender: "Emma Brown", senderCode: "SND456", senderPhone: "+1234560987", receiver: "Michael Davis", receiverCode: "RCV654", receiverPhone: "+0987654123", senderAmount: 250.50, receiverAmount: 125.25, agency: "WARI DEKAR 97", date: "2023-06-13" },
-//   { id: '4', transactionCode: 'TXN004', sender: "Oliver Wilson", senderCode: "SND012", senderPhone: "+1234598765", receiver: "Sophia Taylor", receiverCode: "RCV098", receiverPhone: "+0987610987", senderAmount: 750.25, receiverAmount: 375.12, agency: "AGENCE CENTRALE ABDALLAHI", date: "2023-06-12" },
-//   { id: '5', transactionCode: 'TXN005', sender: "Ava Martinez", senderCode: "SND345", senderPhone: "+1234561234", receiver: "Liam Anderson", receiverCode: "RCV876", receiverPhone: "+0987656789", senderAmount: 300.00, receiverAmount: 150.00, agency: "AGENCE SEBKHA MOSSA", date: "2023-06-11" },
-// ];
 
-const convertDate=(timestamp:number)=>{
-
-   const date = new Date(timestamp);
-
-   // Extract the day, month, and year
-   const day = String(date.getDate()).padStart(2, '0'); // Add leading zero if necessary
-   const month = String(date.getMonth() + 1).padStart(2, '0'); // getMonth() is zero-based, so add 1
-   const year = date.getFullYear();
-   // Format the date as DD/MM/YYYY
-   const formattedDate = `${day}/${month}/${year}`;
-
-   return formattedDate;
-}
 
 const TransactionItem = ({ item }:{item:any}) => (
 
@@ -88,16 +68,14 @@ export default function Component({ navigation }:{navigation:any}) {
          if (response.status != 200) {
             console.log(response);
             throw new Error(`Error! status: ${response.status}`);
-          }
-          const json = await response.json();
-          //debug
-         // console.log("=========================");
-         // json.forEach((item)=> console.log(item.trcode));
-         // console.log("=========================");
+         }
+         
+         const json = await response.json();
          setTransData(json);
-       } catch (error) {
-         console.error(error);
-       }
+         
+         }catch (error) {
+            console.error(error);
+         }
    }
 
    useEffect(()=>{

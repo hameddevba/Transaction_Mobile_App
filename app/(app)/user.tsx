@@ -5,91 +5,44 @@ import { Dropdown } from 'react-native-element-dropdown';
 import { router } from 'expo-router'
 
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-   const data = [
-      { label: 'MRO', id: 1 },
-      { label: 'CFA', id: 2 },
-      { label: 'EUR', id: 3 },
-      { label: 'USD', id: 4 },
-     
-    ];
+import { data_trans } from '../utils/dataTrans';
+import { formatDateTime } from '../utils/timeConvert';
+
+
+
+const data = [
+   { label: 'MRO', id: 1 },
+   { label: 'CFA', id: 2 },
+   { label: 'EUR', id: 3 },
+   { label: 'USD', id: 4 }, 
+];
    
 
-    type Agency = {
-      agCode: string;
-      agLib: string;
-    };
+type Agency = {
+  agCode: string;
+  agLib: string;
+};
 
 
-    const defaultValue = {
-
-      envoyeur: {
-          entel: "0022246049282",
-          enpre: "Ba",
-          endate: 1639884148000,
-          ennom: "Mohamed",
-          encode:1341717,
-          enuscode: 1260,
-          enpi: "7139163432",
-          entypp: "CARNT DIDENTEN",
-          enadd: "MAURITANIE",
-          enagcode: 24
-      },
-
-      benef: {
-          bnpre: "",
-          bnagcode: 44,
-          bntypp: "",
-          bnpi: "",
-          bnnom: "M",
-          bntel: "23232323",
-          bnadd: "treavh",
-          bndate: 1539885038000,
-          bnuscode: 1260
-      },
-
-      trdeven: "CFA",
-      trdatcr: "25-10-2027 10:00:49",
-      trtyp: 0,
-      trdemanen: null,
-      tragen: 24,
-      tragbn: 50,
-      truscode: 1260,
-      trcacodet: null,
-      trvauscode: null,
-      trmone: 0,
-      trcacodepey: 22,
-      trmonttc: 0,
-      trcodetrans: null,
-      travis: "",
-      trmont: 0,
-      trdev: "MRO",
-      trtacode: null,
-      trnetpay: 0,
-      trdevpay: "MRO",
-      trcodepay: null,
-      trvalidan: "1",
-      trdemanben: null,
-      trdate: 1700920674000,
-      trrejet: ""
-  }
+    
   
 
-   type DataSetsType={
-      lastName: string,
-      firstName: string,
-      phoneNumber: string,
-      address: string,
-      amount:string,
-      amountPayed:string,
-      selectedMountCurrency:string,
-      selectedPayedMountCurrency:string,
-      selectedAgence:string|null,
-   }
+type DataSetsType={
+   lastName: string,
+   firstName: string,
+   phoneNumber: string,
+   address: string,
+   amount:string,
+   amountPayed:string,
+   selectedMountCurrency:string,
+   selectedPayedMountCurrency:string,
+   selectedAgence:string|null,
+}
 
 function Component() {
 
 
-   const [dataSubmited, setDataSubmited] = useState(defaultValue)
+   const [dataSubmited, setDataSubmited] = useState(data_trans)
 
    const [dataSets, setDataSets] = useState<DataSetsType>({
       lastName: '',
@@ -101,34 +54,16 @@ function Component() {
       selectedMountCurrency:'CFA',
       selectedPayedMountCurrency:"MRO",
       selectedAgence:null,
-
    });
 
    //store the fetched data from the database 
-    const [dataAgency, setDataAgency] =useState<Agency[]>([]);
+   const [dataAgency, setDataAgency] =useState<Agency[]>([]);
 
 
-   function formatDateTime() {
-      const now = new Date();
-      
-      // Extract date components
-      const day = String(now.getDate()).padStart(2, '0');
-      const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-      const year = now.getFullYear();
-      
-      // Extract time components
-      const hours = String(now.getHours()).padStart(2, '0');
-      const minutes = String(now.getMinutes()).padStart(2, '0');
-      const seconds = String(now.getSeconds()).padStart(2, '0');
-      
-      // Format the date and time
-      const formattedDateTime = `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
-      
-      return formattedDateTime;
-   }
+   
 
 
-    const handleDataFetching = () => {
+   const handleDataFetching = () => {
 
       const newDataSubmited = {
          ...dataSubmited,
@@ -166,8 +101,7 @@ function Component() {
          .then(response => response.text())
          .then(data =>{
             const jsonData = JSON.stringify(data)
-            console.log( "the data Json sended : ")
-            console.log(jsonData)
+            // console.log(jsonData)
          })
          .catch(error => console.error('Error:', error));
    
@@ -210,8 +144,8 @@ function Component() {
          dataSets.amount !='0' &&
          dataSets.amountPayed != '0'
       ){
-      // handleDataFetching();
-      // router.navigate(`/trans?num=${dataSubmited.envoyeur.entel}&bntel=${dataSets.phoneNumber}`);
+      handleDataFetching();
+      router.navigate(`/trans?num=${dataSubmited.envoyeur.entel}&bntel=${dataSets.phoneNumber}`);
       }else{
          Alert.alert("Veillez inserez des donnees valide")
       }

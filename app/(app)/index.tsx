@@ -4,18 +4,6 @@ import { router } from 'expo-router'
 import { Dropdown } from 'react-native-element-dropdown';
 
 
-//data example 
-// const data = [
-//    { label: 'Agent 1', value: '1' },
-//    { label: 'Agent 2', value: '2' },
-//    { label: 'Agent 3', value: '3' },
-//    { label: 'Agent 4', value: '4' },
-//    { label: 'Agent 5', value: '5' },
-//    { label: 'Agent 6', value: '6' },
-//    { label: 'Agent 7', value: '7' },
-//    { label: 'Agent 8', value: '8' },
-//  ];
-
 
 const ResearchScreen = () => {
 
@@ -38,7 +26,7 @@ const ResearchScreen = () => {
   };
 
 
-   const getMoviesFromApiAsync = async () => {
+   const getAllAgency = async () => {
       try {
         const response = await fetch(
          'http://192.168.100.100:9999/api/agences',
@@ -51,7 +39,7 @@ const ResearchScreen = () => {
     };
 
    useEffect(()=>{
-      // getMoviesFromApiAsync();
+      // getAllAgency();
    },[])
 
   return (
@@ -90,10 +78,6 @@ const ResearchScreen = () => {
       >
         <Text style={styles.buttonText}>Recherche Transaction</Text>
       </TouchableOpacity>
-         {/* <Button 
-         title='users'
-         onPress={()=> router.navigate(`/acardView`)}
-         /> */}
     </View>
   );
 };
