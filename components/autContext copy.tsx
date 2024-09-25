@@ -1,7 +1,7 @@
 import { useContext, createContext, type PropsWithChildren } from 'react';
 import { useStorageState } from '../app/authConfig/useStorageState';
 import { Alert } from 'react-native';
-import fetchData from '../app/utils/data_fetching';
+import fetchData from '../utils/data_fetching';
 
 interface SignInResponse {
    tokenType: string;
