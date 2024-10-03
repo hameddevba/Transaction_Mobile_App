@@ -7,37 +7,11 @@ import { router } from 'expo-router'
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import { data_trans } from '../../utils/dataTrans';
 import { formatDateTime } from '../../utils/timeConvert';
+import { data } from '@/constants/currency';
+import { Agency, DataSetsType } from '@/constants/types/types';
+import { fetchURL } from '@/constants/fetchUrl';
 
 
-
-const data = [
-   { label: 'MRO', id: 1 },
-   { label: 'CFA', id: 2 },
-   { label: 'EUR', id: 3 },
-   { label: 'USD', id: 4 }, 
-];
-   
-
-type Agency = {
-  agCode: string;
-  agLib: string;
-};
-
-
-    
-  
-
-type DataSetsType={
-   lastName: string,
-   firstName: string,
-   phoneNumber: string,
-   address: string,
-   amount:string,
-   amountPayed:string,
-   selectedMountCurrency:string,
-   selectedPayedMountCurrency:string,
-   selectedAgence:string|null,
-}
 
 function Component() {
 
@@ -91,10 +65,13 @@ function Component() {
       const formData = new FormData();
       formData.append('data', JSON.stringify(newDataSubmited));
    
-      const url = "http://192.168.100.100:9999/api/trans/changetrans";
+      const url = `${fetchURL}/api/trans/changetrans`;
       const options = {
-         method: 'POST',
-         body: formData,
+            method: 'POST',
+            headers: {
+              'Authorization': '', // You can add your token here if needed
+            },
+            body: formData,
       };
    
       fetch(url, options)
@@ -122,7 +99,14 @@ function Component() {
 
     const getAllAgency = async () => {
       try {
-         const response = await fetch('http://192.168.100.100:9999/api/agences');
+         const response = await fetch(`${fetchURL}/api/agences`,
+            {
+               method: 'GET',
+               headers: {
+                 'Authorization': '', // You can add your token here if needed
+                 'Content-Type': 'application/json'
+               },
+         });
          const json = await response.json();
          setDataAgency(json);
       } catch (error) {

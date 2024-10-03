@@ -1,6 +1,7 @@
 import { useContext, createContext, type PropsWithChildren } from 'react';
 import { useStorageState } from './useStorageState';
 import { Alert } from 'react-native';
+import { fetchURL } from '@/constants/fetchUrl';
 
 const AuthContext = createContext<{
   signIn: (username:any,password:any) => void;
@@ -34,7 +35,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
       value={{
         signIn: async (username:any,password:any) => {
           // Perform sign-in logic here
-            const url = 'http://192.168.100.100:9999/api/auth/signin';
+            const url = `${fetchURL}/api/auth/signin`;
             const data = {
               username: username,
               password: password
@@ -50,9 +51,10 @@ export function SessionProvider({ children }: PropsWithChildren) {
                 body: JSON.stringify(data)
               });
             
-              const result = await response.json();
+              const result = await response.text();
 
-              setSession(result.tokenType +" "+result.accessToken);
+            //   setSession(result.tokenType +" "+result.accessToken);
+              setSession(result);
 
               // if (result) {
               //    console.log("login success")

@@ -6,14 +6,16 @@ import { router } from 'expo-router';
 
 const LoginScreen = () => {
    
-   const { signIn } = useSession();
+   const { signIn, session } = useSession();
    
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
 
 
   const handleLogin = () => { 
-      router.replace('/');
+   signIn(name,password)
+   console.log(session)
+   if(session) router.replace('/');
   };
 
   return (
