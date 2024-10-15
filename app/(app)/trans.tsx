@@ -7,12 +7,13 @@ import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 import { Image } from 'expo-image';
 import { fetchURL } from '@/constants/fetchUrl';
+import { useSession } from '../authConfig/autContext';
 
 
 
  
 const TransactionItem = ({ item }:{item:any}) =>{
-
+   
    const [modalVisible, setModalVisible] = useState(false);
    const [modalImage, setModalImage] = useState(false);
 
@@ -21,7 +22,7 @@ const TransactionItem = ({ item }:{item:any}) =>{
       setModalImage(true);
    };
 
-   const handleTakePicture = async () => {
+   const handleTakePicture = async (code:String) => {
       // Close the modal
       setModalVisible(false);
       // setModalImage(true)
@@ -35,7 +36,17 @@ const TransactionItem = ({ item }:{item:any}) =>{
           quality: 1,
         });
         if (!result.canceled) {
-          console.log(result.assets[0].uri);
+         try {
+            const response = await FileSystem.uploadAsync(`${fetchURL}/api/trans/image-upload/${code}`, result.assets[0].uri, {
+              fieldName: 'file',
+              httpMethod: 'PATCH',// The field name that the server expects
+              mimeType: result.assets[0].mimeType,
+              uploadType: FileSystem.FileSystemUploadType.MULTIPART,
+            });
+            console.log(JSON.stringify(response, null, 4));
+          } catch (error) {
+            console.log(error);
+          };
         }
       }
     };
@@ -132,7 +143,7 @@ const TransactionItem = ({ item }:{item:any}) =>{
                      name="camera" 
                      size={30} 
                      color="black" 
-                     onPress={handleTakePicture} 
+                     onPress={()=>handleTakePicture(item.trcode)} 
                   />
 
                   {/* Icon for picking a picture */}
@@ -179,22 +190,34 @@ const TransactionItem = ({ item }:{item:any}) =>{
 
 export default function Component() {
 
-   const { num,bntel } = useLocalSearchParams();
+   
+   const { session } = useSession();
+   
+
+
+   const { bntel } = useLocalSearchParams();
 
    const [transData, setTransData] =useState([])
    const [isloading ,setIsloading]= useState(false)
 
    const getAllTrans = async ()=>{
+      let user_id:any;
+
+      if(session){
+         user_id = JSON.parse(session)
+      }
+      console.log( "trans user id : "+ user_id.id);
+
 
       setIsloading(false)
       try {
          const response = await fetch(
          //  `http://192.168.99.143:9999/api/trans/filtre/${num}/${parseInt(agen ??'0')}`,
-          `${fetchURL}/api/trans/env/0022246049282`,
+          `${fetchURL}/api/trans/env/${user_id.id}`,
           {
             method: 'GET',
             headers: {
-              'Authorization': '', // You can add your token here if needed
+              'Authorization': user_id.tokenType+" "+user_id.accessToken, // You can add your token here if needed
               'Content-Type': 'application/json'
             }
          }
@@ -219,7 +242,10 @@ export default function Component() {
 
    useEffect(()=>{
       getAllTrans();
+      console.log(session)
+
    },[bntel])
+
 
 
   return (

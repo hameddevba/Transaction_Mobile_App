@@ -1,6 +1,7 @@
 export type Agency = {
    agCode: string;
    agLib: string;
+   agUsCode:string
  };
  
  
@@ -14,4 +15,5 @@ export type Agency = {
     selectedMountCurrency:string,
     selectedPayedMountCurrency:string,
     selectedAgence:string|null,
+    uscode:string | null
  }

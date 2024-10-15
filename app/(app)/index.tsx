@@ -10,13 +10,22 @@ import { formatDateTime } from '../../utils/timeConvert';
 import { data } from '@/constants/currency';
 import { Agency, DataSetsType } from '@/constants/types/types';
 import { fetchURL } from '@/constants/fetchUrl';
+import { useSession } from '../authConfig/autContext';
 
 
 
 function Component() {
 
+   const { session, isLoading, signOut } = useSession();
+   let user_id:any
+
+   if(session){
+      user_id = JSON.parse(session)
+   }
 
    const [dataSubmited, setDataSubmited] = useState(data_trans)
+
+   const [selectedAgence, setSelectedAgence] = useState<string>()
 
    const [dataSets, setDataSets] = useState<DataSetsType>({
       lastName: '',
@@ -28,6 +37,7 @@ function Component() {
       selectedMountCurrency:'CFA',
       selectedPayedMountCurrency:"MRO",
       selectedAgence:null,
+      uscode:null
    });
 
    //store the fetched data from the database 
@@ -38,6 +48,7 @@ function Component() {
 
 
    const handleDataFetching = () => {
+
 
       const newDataSubmited = {
          ...dataSubmited,
@@ -57,6 +68,7 @@ function Component() {
          trdevpay: dataSets.selectedPayedMountCurrency,
          trdev: dataSets.selectedPayedMountCurrency,
          trdeven: dataSets.selectedMountCurrency,
+         truscode:parseInt(selectedAgence??"0")
       };
    
       setDataSubmited(newDataSubmited);
@@ -92,6 +104,7 @@ function Component() {
          selectedMountCurrency: 'CFA',
          selectedPayedMountCurrency: "MRO",
          selectedAgence: null,
+         uscode:null
       });
    };
 
@@ -129,7 +142,8 @@ function Component() {
          dataSets.amountPayed != '0'
       ){
       handleDataFetching();
-      router.navigate(`/trans?num=${dataSubmited.envoyeur.entel}&bntel=${dataSets.phoneNumber}`);
+      Alert.alert("TRANSACTION REUSSI")
+      // router.navigate(`/trans?num=${dataSubmited.envoyeur.entel}&bntel=${dataSets.phoneNumber}`);
       }else{
          Alert.alert("Veillez inserez des donnees valide")
       }
@@ -138,6 +152,9 @@ function Component() {
 
 
   useEffect(() => {
+   if(session){
+      console.log("The id user : "+ user_id.id)
+   }
    getAllAgency();
   }, []);
 
@@ -226,7 +243,9 @@ function Component() {
                   searchPlaceholder="Search..."
                   value={dataSets.selectedAgence}
                   onChange={(item) => {
-                     handleInputChange('selectedAgence',item.agCode);;
+                     handleInputChange('selectedAgence',item.agCode);
+                     setSelectedAgence(item.agUsCode);
+                     // console.log(dataSets.uscode)
                   }}
                />
             </Layout>
