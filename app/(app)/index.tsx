@@ -25,8 +25,11 @@ function Component() {
 
    const [dataSubmited, setDataSubmited] = useState(data_trans)
 
-   const [selectedAgence, setSelectedAgence] = useState<string>()
+   const [userAgence, setUserAgence] = useState()
 
+   // // const [selectedAgenceUsCode, setSelectedAgenceUsCode] = useState<string>()
+
+   // the default value of each fields in the form
    const [dataSets, setDataSets] = useState<DataSetsType>({
       lastName: '',
       firstName: '',
@@ -40,15 +43,16 @@ function Component() {
       uscode:null
    });
 
-   //store the fetched data from the database 
+   //store the fetched data from the database
    const [dataAgency, setDataAgency] =useState<Agency[]>([]);
 
 
-   
 
 
+// This function handle the fields values and is called when the form is submitted
    const handleDataFetching = () => {
 
+      console.log(userAgence)
 
       const newDataSubmited = {
          ...dataSubmited,
@@ -61,31 +65,30 @@ function Component() {
             bnagcode: parseInt(dataSets.selectedAgence ?? '0'),
          },
          trdatcr : formatDateTime(),
-         tragen: parseInt(dataSets.selectedAgence ?? '0'),
+         tragen: parseInt(userAgence ?? '0'),
          tragbn: parseInt(dataSets.selectedAgence ?? '0'),
          trmone: parseFloat(dataSets.amount),
          trnetpay: parseFloat(dataSets.amountPayed),
          trdevpay: dataSets.selectedPayedMountCurrency,
          trdev: dataSets.selectedPayedMountCurrency,
          trdeven: dataSets.selectedMountCurrency,
-         truscode:parseInt(selectedAgence??"0")
+         truscode:parseInt(user_id.id??"0")
       };
-   
-      setDataSubmited(newDataSubmited);
-   
-      
+
+      // setDataSubmited(newDataSubmited);
+
+
       const formData = new FormData();
       formData.append('data', JSON.stringify(newDataSubmited));
-   
-      const url = `${fetchURL}/api/trans/changetrans`;
+
+      const url = `${fetchURL}/api/trans/add_trans`;
       const options = {
             method: 'POST',
             headers: {
               'Authorization': '', // You can add your token here if needed
             },
-            body: formData,
+            body: JSON.stringify(newDataSubmited),
       };
-   
       fetch(url, options)
          .then(response => response.text())
          .then(data =>{
@@ -93,7 +96,8 @@ function Component() {
             // console.log(jsonData)
          })
          .catch(error => console.error('Error:', error));
-   
+
+   // reset all field
       setDataSets({
          lastName: '',
          firstName: '',
@@ -109,18 +113,29 @@ function Component() {
    };
 
 
-
+// This function allow to fetch all agency and display it on the selected list, the function is called when the component is mounted
     const getAllAgency = async () => {
       try {
          const response = await fetch(`${fetchURL}/api/agences`,
             {
                method: 'GET',
                headers: {
-                 'Authorization': '', // You can add your token here if needed
+               //   'Authorization': user_id.tokenType+" "+user_id.accessToken, // You can add your token here if needed
                  'Content-Type': 'application/json'
                },
          });
          const json = await response.json();
+         // console.log(json);
+         json.forEach((element:any) => {
+            // console.log(element.agUsCode)
+            // console.log(typeof(user_id))
+            if(element.agUsCode===parseInt(user_id.id)){
+               console.log("found : "+element.agUsCode+" agenc id :" + element.agCode)
+               setUserAgence(element.agCode);
+               console.log("the agence code : "+userAgence)
+
+            }
+         });
          setDataAgency(json);
       } catch (error) {
          console.error(error);
@@ -147,7 +162,7 @@ function Component() {
       }else{
          Alert.alert("Veillez inserez des donnees valide")
       }
-      
+
    }
 
 
@@ -159,7 +174,7 @@ function Component() {
   }, []);
 
   return (
-  
+
       <KeyboardAwareScrollView>
          <Layout style={styles.card} level="2">
          <Text category="h2" style={styles.title}>
@@ -244,13 +259,12 @@ function Component() {
                   value={dataSets.selectedAgence}
                   onChange={(item) => {
                      handleInputChange('selectedAgence',item.agCode);
-                     setSelectedAgence(item.agUsCode);
                      // console.log(dataSets.uscode)
                   }}
                />
             </Layout>
          </Layout>
-            <Button 
+            <Button
                style={styles.button}
                onPress={handleSubmit}>
                Send
@@ -267,7 +281,7 @@ const styles = StyleSheet.create({
    width: '100%',
    // overflow:'scroll'
 
-   
+
   },
   card: {
    flex:1,
@@ -276,7 +290,7 @@ const styles = StyleSheet.create({
    //  maxWidth: 400,
     width: '100%',
     overflow:'visible'
-    
+
   },
   title: {
     margin: 4,

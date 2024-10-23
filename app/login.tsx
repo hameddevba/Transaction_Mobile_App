@@ -15,7 +15,7 @@ const LoginScreen = () => {
   const handleLogin = () => { 
    signIn(name,password)
    console.log(session)
-   if(session) router.replace('/');
+   // if(session) router.replace('/');
   };
 
   return (

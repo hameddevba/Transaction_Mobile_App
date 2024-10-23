@@ -13,5 +13,5 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-, "app/(app)/user.ts", "app/(app)/camara.js", "app/(app)/trans.tsx"  ]
+, "app/(app)/user.ts", "app/(app)/camara.js", "app/(app)/trans_receve.tsx"  ]
 }

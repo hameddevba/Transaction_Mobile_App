@@ -96,15 +96,27 @@ export default function AppLayout() {
         />
         <Drawer.Screen
         
-          name="trans" // This is the name of the page and must match the url from root
+          name="trans_receve" // This is the name of the page and must match the url from root
           options={{
             // drawerItemStyle: { display: 'none' },
-            drawerLabel: 'Transaction',
-            title: 'TRANSACTION',
+            drawerLabel: 'Trans_reçu',
+            title: 'trans_reçu ',
             // headerShadowVisible:true
           }}
         />
+
+      <Drawer.Screen
+        
+        name="trans_sended" // This is the name of the page and must match the url from root
+        options={{
+          // drawerItemStyle: { display: 'none' },
+          drawerLabel: 'Trans_envoyée',
+          title: 'trans_envoyée  ',
+          // headerShadowVisible:true
+        }}
+      />
       </Drawer>
+      
    </GestureHandlerRootView>
 
   );

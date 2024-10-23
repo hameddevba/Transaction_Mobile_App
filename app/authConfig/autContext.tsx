@@ -2,7 +2,7 @@ import { useContext, createContext, type PropsWithChildren } from 'react';
 import { useStorageState } from './useStorageState';
 import { Alert } from 'react-native';
 import { fetchURL } from '@/constants/fetchUrl';
-
+import { router } from 'expo-router';
 const AuthContext = createContext<{
   signIn: (username:any,password:any) => void;
   signOut: () => void;
@@ -55,6 +55,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
               if (response.status === 200) {
                const result = await response.text(); // Assuming response is JSON
                 setSession(result); // Store session data
+                router.replace('/')
                //  setSession(result.tokenType + " " + result.accessToken); // Store session data
                //  console.log("Login successful");
               } else {
@@ -62,6 +63,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
                 console.error('Login failed with status:', response.status);
                 setSession(null); // Clear session or set to null if login failed
                 Alert.alert('Invalid credentials');
+                return false;
               }
             } catch (error) {
               console.error('Error:', error);
